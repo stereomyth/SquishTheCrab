@@ -1,16 +1,16 @@
 {
 	"appID": "5e7b723a7b5f4e4798c8e33cc614d23c",
 	"shortName": "SquishTheCrab",
-	"title": "SquishTheCrab",
+	"title": "Squish The Crab",
 	"studio": {
-		"name": "Example Studio Name",
-		"domain": "studio.example.com",
+		"name": "Lost Technologies",
+		"domain": "lostwith.me",
 		"stagingDomain": "staging.example.com"
 	},
 	"supportedOrientations": [
 		"landscape"
 	],
-	"description": "",
+	"description": "Follow the instructions",
 	"icon": "resources/icons/icon512.png",
 	"splash": {
 		"autoHide": true,
@@ -31,16 +31,5 @@
 			"96": "resources/icons/android96.png"
 		}
 	},
-	"ios": {
-		"bundleID": "example.bundle",
-		"appleID": "12345678",
-		"version": "1.0.0",
-		"icons": {
-			"57": "resources/icons/ios57.png",
-			"72": "resources/icons/ios72.png",
-			"114": "resources/icons/ios114.png",
-			"144": "resources/icons/ios144.png",
-			"renderGloss": true
-		}
-	}
+	"sdkVersion": "release-0.1.19"
 }
