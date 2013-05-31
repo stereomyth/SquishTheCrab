@@ -9,8 +9,8 @@ exports = Class(Game, function (supr) {
 
 		opts = merge(opts, {
 
-			text: "Game 1",
-			backgroundColor: "red",
+			text: "Game 3",
+			backgroundColor: "blue",
 
 		});
 
