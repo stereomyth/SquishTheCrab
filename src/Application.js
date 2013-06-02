@@ -13,6 +13,7 @@ import src.Screens.Results as Results;
 exports = Class(GC.Application, function () {
 
 	var gameList = [ Game1, Game2, Game3 ], stack;
+	
 
 	// var boundsWidth = 1024;
 	// var boundsHeight = 576;
@@ -26,6 +27,8 @@ exports = Class(GC.Application, function () {
 	this.initUI = function () {
 		
 		squish = this;
+		
+		this.outcomes = [], this.isSerious = [], this.seriousTouches = [], this.touches = [];
 
 		stack = new StackView({
 
@@ -37,18 +40,30 @@ exports = Class(GC.Application, function () {
 
 		// GC.app.view.style.scale = scale;
 
+		this.outcomes = ['You ate some suspicious suishi',
+						 'You caught a bannana',
+						 'You murdered a defensless hostage',
+						 'You stroked a cat',
+						 'You did something else',
+						 'You clossed down an orphanage',
+						 'You harrased a crab',
+						 'outcome8',
+						 'outcome9',
+						 'outcome10'];
+		this.isSerious = [false,false,true,false,false,true,false,false,true,false];
+
 		start = new Start();
-		results = new Results();
+		
 		stack.push(start);
 
 		start.on('start', function () {
-			animate(squish.timer).now({x:device.width - 150}, 200);
-			squish.selectGame();
+
+			// animate(squish.timer).now({x:device.width - 150}, 200);
+			// squish.selectGame();
+			squish.showResults();
+
 		});
 
-		results.on('done', function () {
-			stack.push(start);
-		});
 
 		this.timer = new Timer();
 		this.addSubview( this.timer );
@@ -61,29 +76,61 @@ exports = Class(GC.Application, function () {
 
 		var r = math.random(0, gameList.length);
 
-		this.newGame = new gameList[r];
+		this.newGame = new gameList[0];
 
 		this.newGame.once('start', function(){
 			squish.timer.start();
 		});
-		this.newGame.once('success', bind(this, squish.winGame));	
+
+		this.newGame.once('success', function (firstTouch, winTime, serious, outcome) {
+			squish.winGame(firstTouch, winTime, serious, outcome);
+		});	
 		this.newGame.once('fail', bind(this, squish.failGame));
 		this.newGame.once('next', bind(this, squish.selectGame));
 
 		stack.push(this.newGame);
 	};
 
-	this.winGame = function () {
+	this.winGame = function (firstTouch, winTime, serious, outcome) {
+
+		this.timer.stop();
+
+		if (serious) {
+			this.seriousTouches.push(firstTouch);
+		} else {
+			this.touches.push(firstTouch);
+		}
+
+		this.outcomes.push(outcome);
+		this.isSerious.push(serious);
+		// this.winTimes.push(winTime);
+
+	};
+
+	this.failGame = function (firstTouch, serious) {
+
+		if (serious) {
+			this.seriousTouches.push(firstTouch);
+		} else {
+			this.touches.push(firstTouch);
+		}
 
 		this.timer.stop();
 
 	};
 
-	this.failGame = function () {
+	this.showResults = function () {
 
-		this.timer.stop();
+		squish.results = new Results({ outcomes: squish.outcomes, seriousness: squish.isSerious, hesTime: 300 });
 
-	};
+		stack.push(squish.results);
+		
+		squish.results.on('done', function () {
+
+			stack.popAll();
+
+		});
+	}
 
 	this.launchUI = function () {};
 

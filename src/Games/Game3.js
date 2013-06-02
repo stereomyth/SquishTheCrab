@@ -5,11 +5,13 @@ import src.Entities.Game as Game;
 
 exports = Class(Game, function (supr) {
 
+	this.mission = "maybe here?"
+	this.serious = false
+
 	this.init = function (opts) {
 
 		opts = merge(opts, {
 
-			text: "Game 3",
 			backgroundColor: "blue",
 
 		});

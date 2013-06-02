@@ -7,9 +7,11 @@ exports = Class(Game, function (supr) {
 
 	this.init = function (opts) {
 
+		this.mission = "Catch the bannana";
+		this.serious = true;
+
 		opts = merge(opts, {
 
-			text: "Game 2",
 			backgroundColor: "green",
 
 		});

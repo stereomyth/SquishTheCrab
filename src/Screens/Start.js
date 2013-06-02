@@ -1,4 +1,4 @@
-import ui.TextView;
+import animate, ui.TextView;
 
 exports = Class(ui.TextView, function (supr) {
 
@@ -8,8 +8,10 @@ exports = Class(ui.TextView, function (supr) {
 
 			layout: "box",
 			color: "white",
-			text: "Start",
+			text: "Would you kindly pick up the tablet and tap to start",
 			backgroundColor: "black",
+			autoFontSize: false,
+			wrap:true,
 			size:100,
 
 		});
@@ -18,6 +20,8 @@ exports = Class(ui.TextView, function (supr) {
 
 		// this.start();
 
+		// this.animLoop();
+
 		this.on('InputSelect', bind(this, function () {
 
 			this.emit('start');
@@ -25,5 +29,11 @@ exports = Class(ui.TextView, function (supr) {
 		}));
 
 	};
+
+	this.animLoop = function () {
+
+		animate(this).now({ backgroundColor: 'white' }, 1000).then(this.animLoop.bind(this));
+
+	}
 
 });

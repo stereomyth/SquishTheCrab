@@ -20,34 +20,16 @@ exports = Class(ui.TextView, function (supr) {
 
 			layout: "box",
 			color: "white",
-			backgroundColor: "black",
+			backgroundColor: "rgba(0,0,0,0.6)",
 			text: "Objective and hint icons",
 			size:100,
-			width:baseWidth / 2,
-			height:baseHeight / 2,
-			x: (baseWidth / 2) - (baseWidth / 4),
-			y: (baseHeight / 2) - (baseHeight / 4)
+			width:baseWidth,
+			height:baseHeight,
 
 		});
 
 		supr(this, 'init', [opts]);
 
-		// animate(this).wait(1000).then(function(){
-
-		// 	this.destroy();
-
-		// });
-
 	};
-
-	// this.destroy = function () {
-
-	// 	this.removeFromSuperview();
-
-	// 	this.emit('intro:hide');
-
-	// 	// GC.app.selectGame();
-
-	// }
 
 });

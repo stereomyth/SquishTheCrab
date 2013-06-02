@@ -32,20 +32,6 @@ exports = Class(ui.TextView, function (supr) {
 
 		supr(this, 'init', [opts]);
 
-		// animate(this).wait(1000).then(function(){
-
-		// 	this.destroy();
-
-		// });
-
 	};
-
-	this.destroy = function () {
-
-		this.removeFromSuperview();
-
-		GC.app.selectGame();
-
-	}
 
 });
