@@ -2,7 +2,8 @@ import device, animate, math.util as math;
 
 import ui.StackView as StackView;
 
-import src.Entities.Timer as Timer
+import src.Entities.Timer as Timer;
+import src.Entities.Backdrop as Backdrop;
 import src.Entities.Success, src.Entities.Fail;
 import src.Games.Game1 as Game1;
 import src.Games.Game2 as Game2;
@@ -15,12 +16,15 @@ exports = Class(GC.Application, function () {
 	var gameList = [ Game1, Game2, Game3 ], stack;
 	
 
-	// var boundsWidth = 1024;
-	// var boundsHeight = 576;
+	var boundsWidth = 1024;
+	var boundsHeight = 576;
 
-	// var baseWidth = device.screen.width * (boundsHeight / device.screen.height); //864
-	// var baseHeight = boundsHeight; //576
-	// var scale = device.screen.height / baseHeight; //1
+	var baseWidth = device.screen.width * (boundsHeight / device.screen.height); //864
+	var baseHeight = boundsHeight; //576
+	var scale = device.screen.height / baseHeight; //1
+
+	GLOBAL.baseHeight = baseHeight;
+	GLOBAL.baseWidth = baseWidth;
 
 	var squish
 
@@ -33,12 +37,10 @@ exports = Class(GC.Application, function () {
 		stack = new StackView({
 
 			superview: this.view,
-			// height: baseHeight,
-			// width: baseWidth,
 			
 		});
 
-		// GC.app.view.style.scale = scale;
+		GC.app.view.style.scale = scale;
 
 		this.outcomes = ['You ate some suspicious suishi',
 						 'You caught a bannana',
@@ -53,12 +55,13 @@ exports = Class(GC.Application, function () {
 		this.isSerious = [false,false,true,false,false,true,false,false,true,false];
 
 		start = new Start();
+		bd = new Backdrop();
 		
 		stack.push(start);
 
 		start.on('start', function () {
 
-			// animate(squish.timer).now({x:device.width - 150}, 200);
+			// animate(squish.timer).now({x:baseWidth - 150}, 200);
 			// squish.selectGame();
 			squish.showResults();
 

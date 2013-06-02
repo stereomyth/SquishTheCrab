@@ -4,7 +4,8 @@ import ui.View;
 import ui.TextView;
 import ui.ScrollView;
 import ui.ViewPool;
-import ui.ButtonView;
+import ui.widget.ButtonView;
+import src.Entities.Backdrop as Backdrop;
 
 exports = Class(ui.ScrollView, function (supr) {
 
@@ -14,7 +15,7 @@ exports = Class(ui.ScrollView, function (supr) {
 		this.outcomes = opts.outcomes;
 		this.hesTime = opts.hesTime
 		this.lines = [];
-		this.lineHeight = 80, this.xOffset = 50;
+		this.lineHeight = 60, this.xOffset = 50;
 
 		opts = merge(opts, {
 
@@ -32,24 +33,27 @@ exports = Class(ui.ScrollView, function (supr) {
 
 	this.build = function () {
 
-		this.done = new ui.ButtonView({
+		this.bd = new Backdrop;
+		this.addSubview(this.bd);
+
+		this.done = new ui.widget.ButtonView({
 			superview: this,
 			title: 'done',
 			text: {
 				color:'white',
-				size: 70,
+				size: 50,
 			},
 			backgroundColor: 'red',
 			width:200,
 			height:100,
-			x: device.width - 200,
-			y: device.height - 100,
+			x: GLOBAL.baseWidth - 200,
+			y: GLOBAL.baseHeight - 100,
 
 		});
 
 
 		if (this.hesTime > 0) {
-			this.hesText = 'At least you hesitated ' + this.hesTime + 'ms longer on average';
+			this.hesText = 'You hesitated ~' + this.hesTime + 'ms longer for these tasks';
 		} else {
 			this.hesText = 'you shit';
 		}
@@ -61,13 +65,14 @@ exports = Class(ui.ScrollView, function (supr) {
 			color:'white',
 			size: 50,
 			backgroundColor: 'red',
-			width:device.width - 200,
+			width:GLOBAL.baseWidth - 200,
 			height:100,
-			y: device.height,
+			y: GLOBAL.baseHeight,
 			padding: 20,
 
 		});
 
+		this.addFixedView(this.bd);
 		this.addFixedView(this.done);
 		this.addFixedView(this.hesitate);
 
@@ -76,16 +81,16 @@ exports = Class(ui.ScrollView, function (supr) {
 			initCount: this.outcomes.length,
 			initOpts: {
 				parent: this,
+				layout: 'box',
 				color: 'white',
 				horizontalAlign:'left',
 				height: this.lineHeight,
-				width: device.width,
 				x: this.xOffset + 30,
 				canHandleEvents: false,
 				autoFontSize: false,
 				clip: true,
 				opacity: 0,
-				size: 50,
+				size: 35,
 				text:'TextView'
 			}
 		});
@@ -164,7 +169,7 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		for (var i = 0; i < this.lines.length; i++) {
 
-			if (i < device.height / this.lineHeight) {
+			if (i < GLOBAL.baseHeight / this.lineHeight) {
 
 				animate(this.lines[i]).wait(i * 100).then({ opacity: 1, x: 0 + 30}, 1000);
 
@@ -178,7 +183,7 @@ exports = Class(ui.ScrollView, function (supr) {
 		}
 
 		animate(this).wait(4000).then(function(){this.goSerious()});
-		animate(this.hesitate).wait(5500).then({ y: device.height - 100 }, 500);
+		animate(this.hesitate).wait(5500).then({ y: GLOBAL.baseHeight - 100 }, 500);
 	}
 
 	this.killLines = function () {
