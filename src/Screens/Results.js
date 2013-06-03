@@ -15,7 +15,7 @@ exports = Class(ui.ScrollView, function (supr) {
 		this.outcomes = opts.outcomes;
 		this.hesTime = opts.hesTime
 		this.lines = [];
-		this.lineHeight = 60, this.xOffset = 50;
+		this.lineHeight = 60, this.xOffset = 50, this.shouldHesitate, this.shouldGoSerious;
 
 		opts = merge(opts, {
 
@@ -33,8 +33,7 @@ exports = Class(ui.ScrollView, function (supr) {
 
 	this.build = function () {
 
-		this.bd = new Backdrop;
-		this.addSubview(this.bd);
+		this.runChecks();
 
 		this.done = new ui.widget.ButtonView({
 			superview: this,
@@ -50,13 +49,6 @@ exports = Class(ui.ScrollView, function (supr) {
 			y: GLOBAL.baseHeight - 100,
 
 		});
-
-
-		if (this.hesTime > 0) {
-			this.hesText = 'You hesitated ~' + this.hesTime + 'ms longer for these tasks';
-		} else {
-			this.hesText = 'you shit';
-		}
  
 		this.hesitate = new ui.TextView({
 
@@ -72,9 +64,80 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		});
 
-		this.addFixedView(this.bd);
 		this.addFixedView(this.done);
 		this.addFixedView(this.hesitate);
+
+		this.buildLines();
+
+		this.on('ViewDidAppear', bind(this, function () {
+			
+			this.animLines();
+
+		}));
+
+		var that = this
+
+		this.done.on('InputSelect', bind(this, function () {
+			
+			this.emit('done');
+
+		}));
+
+	}
+
+	this.runChecks = function () {
+
+		var serious, silly;
+
+		if (this.outcomes.length < 1) {
+
+			this.outcomes.push("You failed everything?");
+			this.isSerious.push(true);
+
+		} else {
+
+			for (var i = 0; i < this.isSerious.length; i++){
+
+				if (this.isSerious[i]) { 
+					serious = true;
+				} else { 
+					silly = true;
+				}
+
+			}
+
+			if (!serious && silly) {
+
+				this.hesText = "You did not complete any negative tasks";
+
+			} else if (serious && silly) {
+
+				if (this.hesTime > 0) {
+
+					this.hesText = 'You hesitated ~' + this.hesTime + 'ms longer for these tasks';
+
+				} else {
+
+					this.hesTime = Math.abs(this.hesTime);
+
+					this.hesText = 'You hesitated ~' + this.hesTime + 'ms less for these tasks';
+				}
+
+				this.shouldGoSerious = true;
+
+			} else if (serious && !silly) {
+
+				this.hesText = "You only completed negative tasks"
+
+			}
+
+			this.shouldHesitate = true;
+
+		}
+
+	}
+
+	this.buildLines = function () {
 
 		this.linePool = new ui.ViewPool({
 			ctor: ui.TextView,
@@ -106,31 +169,7 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		}
 
-		this.setScrollBounds({ maxY: this.lineHeight * this.outcomes.length, minY: 0 });
-
-		this.on('ViewDidAppear', bind(this, function () {
-			
-			this.animLines();
-
-		}));
-
-
-		// this.on('Scrolled', bind(this, function (delta) {
-			
-		// 	// this.goSerious();
-		// 	// console.log(delta);
-
-		// }));
-
-		var that = this
-
-		this.done.on('InputSelect', bind(this, function () {
-			
-			this.emit('done');
-			// console.log(this.getSubviews())
-			// this.removeAllSubviews();
-
-		}));
+		this.setScrollBounds({ maxY: this.lineHeight * this.lines.length, minY: 0 });
 
 	}
 
@@ -160,9 +199,9 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		}
 
-		// this.killLines();
-
 		this.setScrollBounds({ maxY: this.lineHeight * seriousCount + 100, minY: 0 });
+
+
 	}
 
 	this.animLines = function () {
@@ -182,20 +221,19 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		}
 
-		animate(this).wait(4000).then(function(){this.goSerious()});
-		animate(this.hesitate).wait(5500).then({ y: GLOBAL.baseHeight - 100 }, 500);
-	}
+		var hesWait = 1000;
 
-	this.killLines = function () {
+		if(this.shouldGoSerious) {
 
-		for (var i = 0; i < this.lines.length; i++) {
+			animate(this).wait(4000).then(function(){ this.goSerious() });
 
-			if (!this.isSerious[i]) {
+			hesWait = 5500;
+			
+		}
 
-				console.log('removing ' + i);
-				this.removeSubview(this.lines[i]);
+		if(this.shouldHesitate) {
 
-			}
+			animate(this.hesitate).wait(hesWait).then({ y: GLOBAL.baseHeight - 100 }, 500);
 
 		}
 	}
