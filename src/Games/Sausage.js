@@ -7,18 +7,20 @@ import ui.ScrollView;
 import ui.widget.GridView;
 import src.Entities.Game as Game;
 
+import ui.resource.Image as Image;
 
 exports = Class(Game, function (supr) {
 
-	this.mission = "Find the end of the sausage";
-	this.outcome = "You found the end of a sausage";
+	this.mission = 'Find the end of the sausage';
+	this.hint = 'Scroll';
+	this.outcome = 'You found the end of a sausage';
 	this.serious = false;
 
 	this.init = function (opts) {
 
 		opts = merge(opts, {
 
-			backgroundColor:'red',
+			backgroundColor:'#00a8ff',
 
 		});
 
@@ -35,7 +37,7 @@ exports = Class(Game, function (supr) {
 			superview: this,
 			width:this.bWidth,
 			height:this.bHeight,
-			backgroundColor: 'orange',
+			// backgroundColor: 'orange',
 			scrollY: false,
 			scrollBounds: {
 				minX: - this.bWidth - 500,
@@ -48,11 +50,42 @@ exports = Class(Game, function (supr) {
 
 			superview: this.scollview,
 			width: this.bWidth * 3,
-			height: 100,
-			backgroundColor: 'purple',
+			height: 200,
+			// backgroundColor: 'purple',
 			x: - this.bWidth,
-			y: this.bHeight / 2 - 50,
+			y: this.bHeight / 2 - 100,
 		})
+
+		this.image1 = new Image({url: 'resources/images/sausage1.png'});
+		this.image2 = new Image({url: 'resources/images/sausage2.png'});
+		this.image3 = new Image({url: 'resources/images/sausage3.png'});
+
+		this.sos1 = new ui.ImageView({
+
+			superview:this.sausage,
+			height: this.image1.getHeight(),
+			width: this.image1.getWidth(),
+			image: this.image1,
+
+		});
+		this.sos2 = new ui.ImageView({
+
+			superview:this.sausage,
+			height: this.image2.getHeight(),
+			width: this.image2.getWidth(),
+			x: this.image1.getWidth(),
+			image: this.image2,
+
+		});
+		this.sos3 = new ui.ImageView({
+
+			superview:this.sausage,
+			height: this.image3.getHeight(),
+			width: this.image3.getWidth(),
+			x: this.image1.getWidth() + this.image2.getWidth(),
+			image: this.image3,
+
+		});
 
 		this.circle1 = new EndCircle({
 			superview: this.scollview,
@@ -70,7 +103,7 @@ exports = Class(Game, function (supr) {
 		this.circle2 = new EndCircle({
 			superview: this.scollview,
 			y: this.sausage.style.y - 50,
-			x: this.sausage.style.x + this.bWidth * 3 - 90,
+			x: this.sausage.style.x + this.bWidth * 3 ,
 		});
 
 		this.circle2.on('circled', bind(this, function() {
@@ -102,16 +135,17 @@ exports = Class(Game, function (supr) {
 
 });
 
-var EndCircle = Class(ui.View, function (supr) {
+var EndCircle = Class(ui.ImageView, function (supr) {
 
 	this.init = function (opts) {
 
 		opts = merge(opts, {
 
-			backgroundColor: 'red',
-			width: 200,
-			height: 200,
+			// backgroundColor: 'red',
+			width: 300,
+			height: 300,
 			opacity: 0,
+			image: 'resources/images/circle.png',
 
 		});
 

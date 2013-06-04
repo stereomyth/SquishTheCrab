@@ -5,14 +5,16 @@ import ui.View;
 import ui.ImageView;
 import ui.ScrollView;
 import ui.widget.GridView;
+import AudioManager;
 import src.Entities.Game as Game;
 import src.Entities.Backdrop as Backdrop;
 
 
 exports = Class(Game, function (supr) {
 
-	this.mission = "Shoot the hostage";
-	this.outcome = "You shot a defenceless person";
+	this.mission = 'Shoot the hostage';
+	this.hint = 'Double-Tap';
+	this.outcome = 'You shot a defenceless person';
 	this.serious = true;
 
 	this.init = function (opts) {
@@ -31,56 +33,83 @@ exports = Class(Game, function (supr) {
 
 		supr(this, 'build');
 
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				gunshot: {
+					volume: 0.8
+				},
+				gunload: {
+					volume: 0.8
+				}
+			}
+		});
+
 		this.hostage = new ui.ImageView ({
 
 			superview: this,
-			width: this.bWidth / 2,
+			width: this.bWidth,
 			height: this.bHeight,
-			backgroundColor: 'purple',
+			image: 'resources/images/hostage.png'
 
 		});
 
 		this.gun = new ui.ImageView ({
 
 			superview: this,
-			width: this.bWidth /2,
-			height: this.bHeight / 2,
-			backgroundColor: 'black',
+			width: 476,
+			height: 478,
 			x: this.bWidth / 2,
-			y: this.bHeight / 2,
+			y: this.bHeight - 478,
+			image: 'resources/images/gun.png'
 
 		});
 
-		this.reticule = new ui.ImageView ({
+		// this.reticule = new ui.ImageView ({
 
-			superview: this,
-			width: 200,
-			height: 200,
-			backgroundColor: 'red',
+		// 	superview: this,
+		// 	width: 200,
+		// 	height: 200,
+		// 	backgroundColor: 'red',
 
-		});
+		// });
 
-		this.reticule.hide();
+		// this.reticule.hide();
 
-		this.hostage.on('InputSelect', bind(this, function(evt, pt) {
+		// this.hostage.on('InputSelect', bind(this, function(evt, pt) {
 
-			this.reticule.style.x = pt.x - 100
-			this.reticule.style.y = pt.y - 100
-			this.reticule.show();
+		// 	this.reticule.style.x = pt.x - 100
+		// 	this.reticule.style.y = pt.y - 100
+		// 	this.reticule.show();
 
-			//gun load noise
+		// 	//gun load noise
 
-		}));
+		// }));
 
-		this.reticule.on('InputSelect', bind(this, function() {
+		this.clicked = false;
 
-			//gunshot
+		this.on('InputSelect', bind(this, function() {
 
-			//static noise
+			if (this.clicked) {
 
-			this.noise.show();
+				// this.noise.show();
 
-			this.succeed(2000);
+				this.succeed();
+
+				//gunshot
+				//static noise
+				
+			} else {
+
+				//loading noise,
+				this.audio.play(gunload);
+
+				this.clicked = true;
+
+			}
+
+
+
 
 		}));
 

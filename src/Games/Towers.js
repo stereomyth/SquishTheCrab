@@ -4,7 +4,6 @@ import device, math.util as math, animate;
 import ui.View;
 import ui.ImageView;
 import ui.ScrollView;
-import ui.widget.GridView;
 import src.Entities.Game as Game;
 
 import ui.resource.Image as Image;
@@ -12,12 +11,13 @@ import ui.resource.Image as Image;
 
 exports = Class(Game, function (supr) {
 
-	this.mission = "Crash the plane into the building";
-	this.outcome = "You crashed a plane into a building killing thousands";
+	this.mission = 'Crash the plane into the building';
+	this.hint = 'Scroll';
+	this.outcome = 'You crashed a plane into a building killing thousands';
 	this.serious = true;
 
-	this.towersImage1 = new Image({url: "resources/images/towers1.png"});
-	this.towersImage2 = new Image({url: "resources/images/towers2.png"});
+	this.towersImage1 = new Image({url: 'resources/images/towers1.png'});
+	this.towersImage2 = new Image({url: 'resources/images/towers2.png'});
 
 	this.init = function (opts) {
 
@@ -68,14 +68,14 @@ exports = Class(Game, function (supr) {
 
 		});
 
-		this.plane = new ui.View ({
+		this.plane = new ui.ImageView ({
 
 			superview: this.scollview,
-			width: 100,
-			height: 50,
-			backgroundColor: 'purple',
+			width: 176,
+			height: 80,
 			x: 150,
 			y: 100,
+			image: 'resources/images/plane.png',
 
 		});
 
@@ -85,9 +85,9 @@ exports = Class(Game, function (supr) {
 
 			this.getFirstTouch();
 		
-			if (this.scollview.getOffset().x < -785) {
+			if (this.scollview.getOffset().x < -725) {
 
-				this.noise.show();
+				// this.noise.show();
 
 				this.succeed();	
 

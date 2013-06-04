@@ -12,6 +12,7 @@ import ui.resource.Image as Image;
 exports = Class(Game, function (supr) {
 
 	this.mission = "Eat the bad sushi";
+	this.hint = 'Tap';
 	this.outcome = "You ate some suspicious sushi";
 	this.serious = false;
 

@@ -9,12 +9,13 @@ import src.Entities.Noise as Noise;
 
 exports = Class(ui.View, function (supr) {
 
-	this.introTime = 500;
-	this.endScreenTime = 1000;
-	this.mission = "Squish the Crab"
-	this.outcome = "You harrased a crab";
+	this.introTime = 3000;
+	this.endScreenTime = 2000;
+	this.mission = 'Squish the Crab';
+	this.hint = 'Pinch';
+	this.outcome = 'You harrased a crab';
 	this.serious = false;
-	this.bHeight, this.bWidth;
+	this.bHeight, this.bWidth, this.firstTouch = 0;
 
 	this.init = function (opts) {
 
@@ -34,20 +35,9 @@ exports = Class(ui.View, function (supr) {
 
 	this.build = function () {
 
-		this.bd = new Backdrop ({opacity: 0.1});
-		this.addSubview(this.bd);
+		this.bd = new Noise ({ superview: this, opacity: 0.1 });
 
-		this.intro = new Intro({text: this.mission});
-		this.addSubview( this.intro );
-
-		this.noise = new Noise({
-
-			superview: this,
-			zIndex:9,
-
-		});
-
-		this.noise.hide();
+		this.intro = new Intro({ superview: this, objective: this.mission, hint: this.hint });
 
 		animate(this.intro).wait(this.introTime).then(bind(this, this.start));
 
@@ -125,7 +115,7 @@ exports = Class(ui.View, function (supr) {
 
 			this.firstTouch = this.getTime();
 
-			console.log(this.firstTouch);
+			// console.log(this.firstTouch);
 
 		};
 		

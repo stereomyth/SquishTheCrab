@@ -13,12 +13,14 @@ import src.Games.Sushi as Sushi;
 import src.Games.Sausage as Sausage;
 import src.Games.Hostage as Hostage;
 import src.Games.Towers as Towers;
-import src.Games.Game2 as Game2;
-import src.Games.Game3 as Game3;
+import src.Games.Orphans as Orphans;
+import src.Games.Crab as Crab;
+import src.Games.HiFour as Hands;
 
 exports = Class(GC.Application, function () {
 
-	var gameList = [ Towers, Hostage, Sausage, Sushi], stack, gameCount = 0, played = [];
+	var gameList = [ Hands, Sausage, Sushi], stack, gameCount = 0, played = [];
+	var gameOrder = [Hostage, false, Orphans, false, false, Hostage, Towers];
 
 	var boundsWidth = 1024;
 	var boundsHeight = 576;
@@ -47,16 +49,16 @@ exports = Class(GC.Application, function () {
 		GC.app.view.style.scale = scale;
 
 		// this.outcomes = ['You ate some suspicious sushi',
-						 // 'You caught a bannana',
-						 // 'You murdered a defensless hostage',
-						 // 'You stroked a cat',
-						 // 'You did something else',
-						 // 'You clossed down an orphanage',
-						 // 'You harrased a crab',
-						 // 'outcome8',
-						 // 'serious',
-						 // 'not serious'];
-		// // // this.isSerious = [false,false,true,false,false,true,false,false,true,false];
+		// 				 'You caught a bannana',
+		// 				 'You murdered a defensless hostage',
+		// 				 'You stroked a cat',
+		// 				 'You did something else',
+		// 				 'You clossed down an orphanage',
+		// 				 'You harrased a crab',
+		// 				 'outcome8',
+		// 				 'serious',
+		// 				 'not serious'];
+		// this.isSerious = [false,false,true,false,false,true,false,false,true,false];
 		// this.isSerious = [false,true,false];
 		// this.seriousTouches = [1000];
 		// this.touches = [3000, 2000];
@@ -66,14 +68,17 @@ exports = Class(GC.Application, function () {
 		
 		stack.push(start);
 
-		start.on('start', function () {
+		this.timer = new Timer({ superview: this });
+
+		start.on('start', bind(this, function () {
 
 			animate(squish.timer).now({x:baseWidth - 150}, 200);
-			// stack.push(tutorial);
-			squish.selectGame();
+			this.timer.reset();
+			stack.push(tutorial);
+			// squish.selectGame();
 			// squish.showResults();
 
-		});
+		}));
 
 		tutorial.on('squished', function () {
 
@@ -82,22 +87,18 @@ exports = Class(GC.Application, function () {
 		});
 
 
-		this.timer = new Timer();
-		this.addSubview( this.timer );
 
 	};
 	
 	this.selectGame = function () {
 
-		if (gameCount === gameList.length) {
+		if (gameCount === gameOrder.length) {
 
 			animate(squish.timer).now({x:baseWidth}, 200);
 
 			squish.showResults();
 
-		} else {
-
-			this.timer.reset();
+		} else if (!gameOrder[gameCount]) {
 
 			var r = math.random(0, gameList.length);
 
@@ -109,26 +110,37 @@ exports = Class(GC.Application, function () {
 
 			played[r] = true;
 
-			this.newGame = new gameList[3];
+			this.loadGame(gameList[r]);
 
-			this.newGame.once('start', function(){
-				squish.timer.start();
-			});
+		} else {
 
-			this.newGame.once('success', function (firstTouch, winTime, serious, outcome) {
-				squish.winGame(firstTouch, winTime, serious, outcome);
-			});	
-			this.newGame.once('fail', bind(this, squish.failGame));
-			this.newGame.once('next', bind(this, squish.selectGame));
-
-			stack.push(this.newGame);
-
-			gameCount++;
+			this.loadGame(gameOrder[gameCount]);
 
 		}
 
+		gameCount++;
 
 	};
+
+	this.loadGame = function (theGame) {
+
+		this.timer.reset();
+
+		this.newGame = new theGame;
+
+		this.newGame.once('start', function(){
+			squish.timer.start();
+		});
+
+		this.newGame.once('success', function (firstTouch, winTime, serious, outcome) {
+			squish.winGame(firstTouch, winTime, serious, outcome);
+		});	
+		this.newGame.once('fail', bind(this, squish.failGame));
+		this.newGame.once('next', bind(this, squish.selectGame));
+
+		stack.push(this.newGame);
+
+	}
 
 	this.winGame = function (firstTouch, winTime, serious, outcome) {
 

@@ -1,5 +1,7 @@
 import animate, ui.View, ui.TextView;
 
+import src.Entities.Intro as Intro;
+
 exports = Class(ui.View, function (supr) {
 
 	this.init = function (opts) {
@@ -37,16 +39,36 @@ exports = Class(ui.View, function (supr) {
 
 		}));
 
+		this.intro = new Intro({
+			superview: this,
+			objective: 'Follow these instructions before the time runs out',
+			hint: 'These hints can be useful',
+		}),
+
+		this.gogo = new ui.TextView({
+
+			superview: this.intro,
+			text: 'Tap to continue',
+			y: GLOBAL.baseHeight - 100,
+			width: GLOBAL.baseWidth,
+			height:50,
+			color:'white',
+			strokeColor:'black',
+			strokeWidth:5,
+			size: 50,
+
+		});
+
 
 	};
 
-	this.animLoop = function () {
+	// this.animLoop = function () {
 
-		animate(this.text2)
-			.now({ opacity: 0 }, 3000)
-			.wait(1000).then({ opacity: 1 }, 2000)
-			.wait(1500).then(this.animLoop.bind(this));
+	// 	animate(this.text2)
+	// 		.now({ opacity: 0 }, 3000)
+	// 		.wait(1000).then({ opacity: 1 }, 2000)
+	// 		.wait(1500).then(this.animLoop.bind(this));
 
-	}
+	// }
 
 });

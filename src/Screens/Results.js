@@ -5,25 +5,23 @@ import ui.TextView;
 import ui.ScrollView;
 import ui.ViewPool;
 import ui.widget.ButtonView;
-import src.Entities.Backdrop as Backdrop;
+import src.Entities.Noise as Noise;
 
-exports = Class(ui.ScrollView, function (supr) {
+exports = Class(ui.View, function (supr) {
 
 	this.init = function (opts) {
 
+		this.bHeight = GLOBAL.baseHeight;
+		this.bWidth = GLOBAL.baseWidth;
+
 		this.isSerious = opts.seriousness;
 		this.outcomes = opts.outcomes;
-		this.hesTime = opts.hesTime
+		this.hesTime = Math.round(opts.hesTime);
+		this.seriousCount = 0;
 		this.lines = [];
 		this.lineHeight = 60, this.xOffset = 50, this.shouldHesitate, this.shouldGoSerious;
 
-		opts = merge(opts, {
-
-			scrollX: false,
-			// offsetX: 30,
-			backgroundColor: 'gray',
-
-		});
+		opts = merge(opts, { backgroundColor: 'black'});
 
 		supr(this, 'init', [opts]);
 
@@ -33,20 +31,42 @@ exports = Class(ui.ScrollView, function (supr) {
 
 	this.build = function () {
 
+		this.homeTimer = setTimeout(bind(this, function() {
+
+			this.emit('done');
+
+		}), 60000 );
+
 		this.runChecks();
+
+		this.noise = new Noise({
+			superview: this,
+			opacity: 0.03,
+			zIndex: 10,
+			canHandleEvents: false,
+		})
+
+		this.scroll = new ui.ScrollView({
+
+			superview: this,
+			scrollX: false,
+
+		})
+
+		this.bottomPadding = 30;
 
 		this.done = new ui.widget.ButtonView({
 			superview: this,
-			title: 'done',
+			title: 'Return',
 			text: {
 				color:'white',
-				size: 50,
+				size: 30,
 			},
-			backgroundColor: 'red',
+			backgroundColor: 'green',
 			width:200,
-			height:100,
-			x: GLOBAL.baseWidth - 200,
-			y: GLOBAL.baseHeight - 100,
+			height:75,
+			x: this.bWidth - 200 - 25,
+			y: 25,
 
 		});
  
@@ -55,17 +75,14 @@ exports = Class(ui.ScrollView, function (supr) {
 			superview: this,
 			text: this.hesText,
 			color:'white',
-			size: 50,
-			backgroundColor: 'red',
-			width:GLOBAL.baseWidth - 200,
-			height:100,
-			y: GLOBAL.baseHeight,
-			padding: 20,
+			size: 20,
+			backgroundColor: 'gray',
+			width:this.bWidth - 50,
+			height:60,
+			y: this.bHeight ,
+			x: 25
 
 		});
-
-		this.addFixedView(this.done);
-		this.addFixedView(this.hesitate);
 
 		this.buildLines();
 
@@ -75,11 +92,11 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		}));
 
-		var that = this
-
 		this.done.on('InputSelect', bind(this, function () {
 			
 			this.emit('done');
+
+			clearTimeout(this.homeTimer);
 
 		}));
 
@@ -91,7 +108,7 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		if (this.outcomes.length < 1) {
 
-			this.outcomes.push("You failed everything?");
+			this.outcomes.push('You failed everything?');
 			this.isSerious.push(true);
 
 		} else {
@@ -108,26 +125,26 @@ exports = Class(ui.ScrollView, function (supr) {
 
 			if (!serious && silly) {
 
-				this.hesText = "You did not complete any negative tasks";
+				this.hesText = 'You did not complete any negative tasks';
 
 			} else if (serious && silly) {
 
 				if (this.hesTime > 0) {
 
-					this.hesText = 'You hesitated ~' + this.hesTime + 'ms longer for these tasks';
+					this.hesText = 'You hesitated ~ ' + this.hesTime + 'ms longer for these tasks';
 
 				} else {
 
 					this.hesTime = Math.abs(this.hesTime);
 
-					this.hesText = 'You hesitated ~' + this.hesTime + 'ms less for these tasks';
+					this.hesText = 'You hesitated ~ ' + this.hesTime + 'ms less for these tasks';
 				}
 
 				this.shouldGoSerious = true;
 
 			} else if (serious && !silly) {
 
-				this.hesText = "You only completed negative tasks"
+				this.hesText = 'You only completed negative tasks'
 
 			}
 
@@ -137,69 +154,44 @@ exports = Class(ui.ScrollView, function (supr) {
 
 	}
 
-	this.buildLines = function () {
+	this.buildLines = function () { 
 
-		this.linePool = new ui.ViewPool({
-			ctor: ui.TextView,
-			initCount: this.outcomes.length,
-			initOpts: {
-				parent: this,
-				layout: 'box',
-				color: 'white',
-				horizontalAlign:'left',
-				height: this.lineHeight,
-				x: this.xOffset + 30,
-				canHandleEvents: false,
-				autoFontSize: false,
-				clip: true,
-				opacity: 0,
-				size: 35,
-				text:'TextView'
-			}
+		this.lines[0] = new Line({
+			superview: this.scroll,
+			text:'Results',
+			size: 100,
+			height: 120,
 		});
 
-		for (var i = 0; i < this.outcomes.length; i++) {
+		for (var i = 1; i < this.outcomes.length + 1; i++) {
 
-			this.lines[i] = this.linePool.obtainView();
-			this.lines[i].updateOpts({
-				text:this.outcomes[i],
-				y: this.lineHeight * i,
-				visible: true,
+			this.lines[i] = new Line({
+				superview: this.scroll,
+				text: this.outcomes[i-1],
+				y: i * this.lineHeight + 60,
+				isSerious: this.isSerious[i-1],
+				seriousCount: this.seriousCount,
 			});
 
-		}
+			if (this.isSerious[i-1]){
+				this.seriousCount++;
+			}
 
-		this.setScrollBounds({ maxY: this.lineHeight * this.lines.length, minY: 0 });
+		};
+
+		this.scroll.setScrollBounds({ maxY: this.lineHeight * this.lines.length + 60, minY: 0 });
 
 	}
 
 	this.goSerious = function () {
-		var seriousCount = 0;
 
-		for (var i = 0; i < this.lines.length; i++) {
-			var line = this.lines[i];
+		for (var i = 1; i < this.lines.length; i++) {
 
-			if (!this.isSerious[i]) {
-
-				animate(line).wait( i * 100 ).then({ opacity: 0, x: this.xOffset + 30 }, 1000)
-					.then(bind(this, function () {
-
-						this.linePool.releaseView(line);
-						
-					}));
-
-
-			} else if (this.isSerious[i]){
-
-				animate(line).wait(1000 + i * 100).then({ y: this.lineHeight * seriousCount }, 1000);
-
-				seriousCount++;
-
-			}
+			this.lines[i].goSerious(i);
 
 		}
 
-		this.setScrollBounds({ maxY: this.lineHeight * seriousCount + 100, minY: 0 });
+		this.scroll.setScrollBounds({ maxY: this.lineHeight * this.seriousCount + 100 + this.hesitate.getPosition().height, minY: 0 });
 
 
 	}
@@ -208,16 +200,7 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		for (var i = 0; i < this.lines.length; i++) {
 
-			if (i < GLOBAL.baseHeight / this.lineHeight) {
-
-				animate(this.lines[i]).wait(i * 100).then({ opacity: 1, x: 0 + 30}, 1000);
-
-			} else {
-
-				animate(this.lines[i]).now({ opacity: 1, x: 0 + 30}, 0);
-
-			}
-
+			this.lines[i].anim(i);
 
 		}
 
@@ -233,9 +216,71 @@ exports = Class(ui.ScrollView, function (supr) {
 
 		if(this.shouldHesitate) {
 
-			animate(this.hesitate).wait(hesWait).then({ y: GLOBAL.baseHeight - 100 }, 500);
+			animate(this.hesitate).wait(hesWait).then({ y: this.bHeight - 60}, 500);
 
 		}
+
 	}
 
 });
+
+var Line = Class(ui.TextView, function (supr) {
+
+	this.init = function (opts) {
+
+		this.lineHeight = 60
+
+		opts = merge(opts, {
+
+			layout: 'box',
+			color: 'white',
+			horizontalAlign:'left',
+			height: this.lineHeight,
+			x: 80,
+			canHandleEvents: false,
+			autoFontSize: false,
+			clip: true,
+			size: 35,
+			text:'TextView',
+			opacity: 0,
+
+		});
+
+		supr(this, 'init', [opts]);
+
+		this.isSerious = opts.isSerious;
+		this.sNth = opts.seriousCount;
+
+	};
+
+	this.anim = function(nth) {
+
+		if (this.style.x < GLOBAL.baseHeight) {
+
+			animate(this).wait(nth * 100).then({ opacity: 1, x: 30}, 1000);
+
+		} else {
+
+			this.style.opacity = 1
+			this.style.x = 30;
+
+		}
+
+	}
+
+	this.goSerious = function (nth) {
+
+		if (!this.isSerious) {
+
+			animate(this).wait( nth * 100 ).then({ opacity: 0, x: 80 }, 1000);
+
+		} else if (this.isSerious){
+
+			animate(this).wait(1000 + nth * 100).then({ y: this.lineHeight * this.sNth + 120 }, 1000);
+
+		}
+
+	}
+
+});
+
