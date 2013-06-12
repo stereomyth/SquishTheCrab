@@ -43,7 +43,7 @@ exports = Class(ui.View, function (supr) {
 			wrap: true, 
 			autoSize: false,
 			strokeColor: 'black',
-			strokeWidth: 10,
+			strokeWidth: 6,
 			size: 70,
 			y: 100,
 			x: 100,
@@ -60,7 +60,7 @@ exports = Class(ui.View, function (supr) {
 			// backgroundColor: 'yellow',
 			color: 'black',
 			strokeColor: 'white',
-			strokeWidth: 5,
+			strokeWidth: 3,
 			size: 50,
 			y:350,
 

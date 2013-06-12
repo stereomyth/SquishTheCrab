@@ -4,6 +4,7 @@ import device, math.util as math, animate;
 import ui.View;
 import ui.ImageView;
 import ui.TextView;
+import AudioManager
 import src.Entities.Game as Game;
 
 import ui.resource.Image as Image;
@@ -46,6 +47,15 @@ exports = Class(Game, function (supr) {
 
 		this.startEvent;
 
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				squeak: {
+					volume: 0.8
+				}
+			}
+		});
+
 		this.crab.on("InputStart", bind(this, function (evt, pt) {
 
 			if (evt.id === 1) {
@@ -55,6 +65,7 @@ exports = Class(Game, function (supr) {
 
 			} else if (evt.id === -1) {
 
+				this.audio.play('squeak');
 				this.succeed();
 
 			}
@@ -73,7 +84,9 @@ exports = Class(Game, function (supr) {
 
 				if (dx > 20 || dx < -20) {
 
+					this.audio.play('squeak');
 					this.succeed();
+
 				}
 			}
 

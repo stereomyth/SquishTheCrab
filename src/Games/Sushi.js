@@ -4,6 +4,7 @@ import device, math.util as math;
 import ui.View;
 import ui.ImageView;
 import ui.widget.GridView;
+import AudioManager;
 import src.Entities.Game as Game;
 
 import ui.resource.Image as Image;
@@ -29,6 +30,16 @@ exports = Class(Game, function (supr) {
 	};
 
 	this.build = function () {
+
+		
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				munch: {
+					volume: 0.8
+				}
+			}
+		});
 
 		supr(this, 'build');
 
@@ -72,6 +83,7 @@ exports = Class(Game, function (supr) {
 			this.sushi[i].on('eaten', bind(this, function () {
 			
 					this.getFirstTouch();
+					this.audio.play('munch');
 
 			}));
 
@@ -102,6 +114,7 @@ var Sushi = Class(ui.View, function (supr) {
 		this.isBad = opts.isBad;
 
 		supr(this, 'init', [opts]);
+
 
 
 		if (this.isBad){

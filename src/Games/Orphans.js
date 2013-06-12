@@ -5,12 +5,13 @@ import ui.View;
 import ui.ImageView;
 import src.Entities.Game as Game;
 
+import AudioManager;
 
 exports = Class(Game, function (supr) {
 
-	this.mission = 'Deny the orphanage funding';
+	this.mission = 'Deny the orphanage vital funding';
 	this.hint = 'Double-Tap';
-	this.outcome = 'You closed down an orphanage';
+	this.outcome = 'You took away the home of hundreds of children';
 	this.serious = true;
 
 	this.init = function (opts) {
@@ -28,6 +29,15 @@ exports = Class(Game, function (supr) {
 	this.build = function () {
 
 		supr(this, 'build');
+
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				stamp: {
+					volume: 0.8
+				}
+			}
+		});
 
 		this.page = new ui.ImageView ({
 
@@ -68,6 +78,9 @@ exports = Class(Game, function (supr) {
 
 				//loading noise,
 				this.stamp.show();
+				
+				this.audio.play('stamp');
+
 
 				this.clicked = true;
 

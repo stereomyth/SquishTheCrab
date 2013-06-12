@@ -5,7 +5,7 @@ import ui.View;
 import ui.ImageView;
 import ui.ScrollView;
 import src.Entities.Game as Game;
-
+import AudioManager;
 import ui.resource.Image as Image;
 
 
@@ -34,6 +34,18 @@ exports = Class(Game, function (supr) {
 	this.build = function () {
 
 		supr(this, 'build');
+
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				explosion: {
+					volume: 0.8
+				},
+				plane: {
+					volume: 0.1
+				},
+			}
+		});
 
 		this.scollview = new ui.ScrollView ({
 
@@ -68,6 +80,8 @@ exports = Class(Game, function (supr) {
 
 		});
 
+		this.audio.play('plane');
+
 		this.plane = new ui.ImageView ({
 
 			superview: this.scollview,
@@ -87,13 +101,14 @@ exports = Class(Game, function (supr) {
 		
 			if (this.scollview.getOffset().x < -725) {
 
-				// this.noise.show();
+				this.scollview.removeListener('Scrolled');
 
+				this.audio.stop('plane');
+				this.audio.play('explosion');
 				this.succeed();	
 
 			}
 
-			// console.log(this.scollview.getOffset().x);
 
 		}));
 

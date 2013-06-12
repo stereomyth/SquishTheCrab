@@ -4,6 +4,7 @@ import device, math.util as math, animate;
 import ui.View;
 import ui.ImageView;
 import ui.TextView;
+import AudioManager;
 import src.Entities.Game as Game;
 
 import ui.resource.Image as Image;
@@ -33,6 +34,15 @@ exports = Class(Game, function (supr) {
 
 		supr(this, 'build');
 
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				clap: {
+					volume: 0.8
+				}
+			}
+		});
+
 		this.hands = [];
 
 		for (var i = 0; i < 4; i++) {
@@ -53,10 +63,12 @@ exports = Class(Game, function (supr) {
 				if (evt.id === 3) {
 
 					this.succeed();
+					this.audio.play('clap');
 
 				} else if (evt.id === -1) {
 
 					this.succeed();
+					this.audio.play('clap');
 
 				}
 

@@ -14,7 +14,7 @@ exports = Class(Game, function (supr) {
 
 	this.mission = 'Shoot the hostage';
 	this.hint = 'Double-Tap';
-	this.outcome = 'You shot a defenceless person';
+	this.outcome = 'You murdered a unarmed human in cold blood';
 	this.serious = true;
 
 	this.init = function (opts) {
@@ -92,17 +92,12 @@ exports = Class(Game, function (supr) {
 
 			if (this.clicked) {
 
-				// this.noise.show();
-
+				this.audio.play('gunshot');
 				this.succeed();
-
-				//gunshot
-				//static noise
 				
 			} else {
 
-				//loading noise,
-				this.audio.play(gunload);
+				this.audio.play('gunload');
 
 				this.clicked = true;
 

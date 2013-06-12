@@ -5,6 +5,7 @@ import ui.View;
 import ui.ImageView;
 import ui.ScrollView;
 import ui.widget.GridView;
+import AudioManager;
 import src.Entities.Game as Game;
 
 import ui.resource.Image as Image;
@@ -31,6 +32,15 @@ exports = Class(Game, function (supr) {
 	this.build = function () {
 
 		supr(this, 'build');
+
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				ping: {
+					volume: 0.8
+				}
+			}
+		});
 
 		this.scollview = new ui.ScrollView ({
 
@@ -96,6 +106,7 @@ exports = Class(Game, function (supr) {
 
 		this.circle1.on('circled', bind(this, function() {
 
+			this.audio.play('ping');
 			this.succeed();
 
 		}));
@@ -108,6 +119,7 @@ exports = Class(Game, function (supr) {
 
 		this.circle2.on('circled', bind(this, function() {
 
+			this.audio.play('ping');
 			this.succeed();
 
 		}));

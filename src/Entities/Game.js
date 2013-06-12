@@ -58,7 +58,7 @@ exports = Class(ui.View, function (supr) {
 		this.d = new Date();
 		this.startMillis = this.d.getTime();
 
-		// this.failTimer = setTimeout(bind(this, this.fail), 5000 );
+		this.failTimer = setTimeout(bind(this, this.fail), 5000 );
 	}
 
 	this.succeed = function(pauseTime) {
@@ -115,7 +115,7 @@ exports = Class(ui.View, function (supr) {
 
 			this.firstTouch = this.getTime();
 
-			// console.log(this.firstTouch);
+			console.log(this.firstTouch);
 
 		};
 		

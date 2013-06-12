@@ -8,6 +8,7 @@ import src.Entities.Success, src.Entities.Fail;
 import src.Screens.Start as Start;
 import src.Screens.Tutorial as Tutorial;
 import src.Screens.Results as Results;
+import AudioManager;
 
 import src.Games.Sushi as Sushi;
 import src.Games.Sausage as Sausage;
@@ -16,11 +17,14 @@ import src.Games.Towers as Towers;
 import src.Games.Orphans as Orphans;
 import src.Games.Crab as Crab;
 import src.Games.HiFour as Hands;
+import src.Games.Balloons as Balloons;
+import src.Games.Bannana as Bannana;
 
 exports = Class(GC.Application, function () {
 
-	var gameList = [ Hands, Sausage, Sushi], stack, gameCount = 0, played = [];
-	var gameOrder = [Hostage, false, Orphans, false, false, Hostage, Towers];
+	var gameList = [Hands, Sausage, Sushi, Balloons, Bannana], stack, gameCount = 0, played = [];
+	// var gameOrder = [Crab, Crab, Crab, Crab, Crab, Crab, Crab, Crab, Crab];
+	var gameOrder = [Crab, false, Orphans, false, false, Hostage, false, false, Towers];
 
 	var boundsWidth = 1024;
 	var boundsHeight = 576;
@@ -63,6 +67,17 @@ exports = Class(GC.Application, function () {
 		// this.seriousTouches = [1000];
 		// this.touches = [3000, 2000];
 
+		this.audio = new AudioManager({
+			path: "resources/sounds/",
+			files: {
+				loop: {
+					volume: 0.1,
+					loop: true,
+			        background: true
+				},
+			}
+		});
+
 		start = new Start();
 		tutorial = new Tutorial();
 		
@@ -70,11 +85,15 @@ exports = Class(GC.Application, function () {
 
 		this.timer = new Timer({ superview: this });
 
-		start.on('start', bind(this, function () {
+		start.on('start', bind(this, function () { 
+
+
 
 			animate(squish.timer).now({x:baseWidth - 150}, 200);
 			this.timer.reset();
 			stack.push(tutorial);
+
+			this.audio.play('loop');
 			// squish.selectGame();
 			// squish.showResults();
 
@@ -95,6 +114,8 @@ exports = Class(GC.Application, function () {
 		if (gameCount === gameOrder.length) {
 
 			animate(squish.timer).now({x:baseWidth}, 200);
+
+			this.audio.pause('loop');
 
 			squish.showResults();
 

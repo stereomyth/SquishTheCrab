@@ -52,11 +52,11 @@ exports = Class(ui.View, function (supr) {
 
 		// this.on('ViewDidAppear', bind(this, function () {
 
-			animate(this).wait(300).then(bind(this, function () {
+			// animate(this).wait(300).then(bind(this, function () {
 
-				this.emit('start');
+			// 	this.emit('start');
 
-			}));
+			// }));
 				
 
 		// }));
